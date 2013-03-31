@@ -22,9 +22,6 @@ class Main
 	}
 	
 	public function new() {
-		//trace("Test");
-		//var mapGen:MapGenerator = new MapGenerator(30, 20, 4);
-		//var mapGen:MapGenerator = new MapGenerator(60, 40, 16);
 		var mapGen:MapGenerator = new MapGenerator(60, 40, 20);
 		mapGen.showMinimap(Lib.current, 8, MapAlign.Center);
 	}

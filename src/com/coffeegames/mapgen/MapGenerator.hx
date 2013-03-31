@@ -60,7 +60,6 @@ class MapGenerator {
 	}
 	
 	private function init():Void {
-		//setUpMap();
 		map = new BitmapData(width, height, false, 0xFF333333);
 		
 		generate();
@@ -94,7 +93,6 @@ class MapGenerator {
 		trace("ENTRANCE : " + map.getPixel32(rooms[0].entrance.x, rooms[0].entrance.y));
 		
 		trace("FLOOR : " + map.getPixel32(rooms[0].originX + 1, rooms[0].originY + 1));
-		//trace("UNUSED DOOR : " + 0xFF9B2766);
 	}
 	
 	public function showMinimap(parent:DisplayObjectContainer, scale:Int, align:MapAlign):Void {
@@ -123,33 +121,12 @@ class MapGenerator {
 		
 	}
 	
-/*	private function initPixelFilter( k : Int ) {
-		if( pixelFilter != null )
-			pixelFilter.fillRect(pixelFilter.rect, 0);
-		else
-			pixelFilter = new BitmapData(mapGen.display.bitmapData.width, mapGen.display.bitmapData.height, true, 0);
-		for( x in 0...Std.int(mapGen.display.bitmapData.width / k) ) {
-			for( y in 0...Std.int(mapGen.display.bitmapData.height / k) ) {
-				var x = x * k, y = y * k;
-				pixelFilter.setPixel32(x, y, 0x20000000);
-				for( i in 1...k ) {
-					pixelFilter.setPixel32(x + i, y, 0x80000000);
-					pixelFilter.setPixel32(x, y + i, 0x80000000);
-				}
-			}
-		}
-	}
-	
-	private function applyFilter(target:BitmapData):Void {
-		target.draw(pixelFilter, null, new ColorTransform(1, 1, 1, 0.25));
-	}*/
-	
 	private function generate():Void {
 		
 		while (roomsLeft > 0) {
 			if (roomsLeft == numRooms) { //First room
 				var dType:DoorType = getRand(0, 1) == 0 ? DoorType.North : DoorType.West;
-				trace( "dType : " + dType );
+				//trace( "dType : " + dType );
 				currentRoomEntrance = new Door(0, 0, dType);
 			} else {
 				if (currentRoomEntrance.type == DoorType.South) {
@@ -172,9 +149,7 @@ class MapGenerator {
 					room.entrance.x = 0;
 					room.entrance.y = Std.int(room.originY + (room.height / 2));
 				}
-				trace("room entrance : " + room.entrance.x + "," + room.entrance.y);
 			}
-			trace("TRYING TO PLACE ROOM : POS : " + room.originX + "," + room.originY + " SIZE : " + room.width + "x" + room.height);
 			
 			//Compare currentRoomSize with previousRoomSize and align them
 			if (roomsLeft < numRooms) {
@@ -195,7 +170,6 @@ class MapGenerator {
 			room.doors.push(eastDoor);
 			
 			if (checkRoomSpace(room) == true) {
-				//trace("SUCCESS! Gonna create room");
 				//Choose one the rooms' doors to be the currentRoomEntrance
 				//currentRoomEntrance = getRand(0, 1) == 0 ? room.doors[0] : room.doors[1];
 				var nextDoorID:Int = getRand(0, 1);
@@ -216,8 +190,6 @@ class MapGenerator {
 			} else {
 				//Try to reduce size of the room to make it fit
 				if (reduceRoom(room) == true) {
-					//trace("REDUCE ROOM SUCCESS! New Size : " + room.width + "x" + room.height);
-					
 					var nextDoorID:Int = getRand(0, 1);
 					if (nextDoorID == 0) {
 						currentRoomEntrance = room.doors[0];
@@ -233,11 +205,9 @@ class MapGenerator {
 					rooms.push(room);
 				} else {
 					if (unusedDoors[doorIndex] != null) {
-						//trace("TRY ANOTHER DOOR");
 						currentRoomEntrance = unusedDoors[doorIndex];
 						doorIndex++;
 					} else {
-						//trace("FAIL : Room not created ->> Both doors with no space");
 						roomsLeft--;
 					}
 				}
@@ -245,8 +215,6 @@ class MapGenerator {
 		}
 		
 		trace("THE END -- TOTAL ROOMS PLACED : " + rooms.length);
-		trace("Unused doors length : " + unusedDoors.length);
-		trace("Unused doors index : " + doorIndex);
 	}
 	
 	private function reduceRoom(room:Room):Bool {
@@ -265,7 +233,6 @@ class MapGenerator {
 						var eastDoor:Door = new Door(Std.int(room.originX + (room.width - 1)), Std.int(room.originY + (room.height / 2)), DoorType.East);
 						room.doors[0] = southDoor;
 						room.doors[1] = eastDoor;
-						//trace("ROOM FIT!!!");
 						return true;
 					}
 				case 1:
@@ -278,7 +245,6 @@ class MapGenerator {
 						var eastDoor:Door = new Door(Std.int(room.originX + (room.width - 1)), Std.int(room.originY + (room.height / 2)), DoorType.East);
 						room.doors[0] = southDoor;
 						room.doors[1] = eastDoor;
-						//trace("ROOM FIT!!!");
 						return true;
 					}
 				case 2:
@@ -291,7 +257,6 @@ class MapGenerator {
 						var eastDoor:Door = new Door(Std.int(room.originX + (room.width - 1)), Std.int(room.originY + (room.height / 2)), DoorType.East);
 						room.doors[0] = southDoor;
 						room.doors[1] = eastDoor;
-						//trace("ROOM FIT!!!");
 						return true;
 					}
 				case 3:
@@ -304,29 +269,22 @@ class MapGenerator {
 						var eastDoor:Door = new Door(Std.int(room.originX + (room.width - 1)), Std.int(room.originY + (room.height / 2)), DoorType.East);
 						room.doors[0] = southDoor;
 						room.doors[1] = eastDoor;
-						//trace("ROOM FIT!!!");
 						return true;
 					}
 			}
 		}
 		
-		//trace("Could not fit room!");
 		return false;
 	}
 	
 	private function printRoom(room:Room):Void {
 		var startX:Int = room.originX;
 		var startY:Int = room.originY;
-		//var endX:Int = startX + (room.width - 1);
 		var endX:Int = startX + room.width;
-		//var endY:Int = startY + (room.height - 1);
 		var endY:Int = startY + room.height;
-		
-		//trace("printRoom --> start : " + startX + "," + startY + " end : " + endX + "," + endY);
 		
 		for (countY in startY...endY) {
 			for (countX in startX...endX) {
-				//var tile:MapTile = new MapTile(); //NEW MAPGEN
 				if (countX == startX && countY == startY) { // NW CORNER
 					//map.setPixel32(countX, countY, 0xFFA30008);
 					map.setPixel32(countX, countY, 0xFF4C57D8);
@@ -375,7 +333,6 @@ class MapGenerator {
 			}
 		}
 		
-		//trace("@#@#@# Tile with the lowest X : " + lowestX);
 		
 		//Testing not used doors
 /*		var unDoorLen:Int = unusedDoors.length;
@@ -396,24 +353,19 @@ class MapGenerator {
 		var startY:Int = room.originY;
 		var endX:Int = startX + room.width;
 		var endY:Int = startY + room.height;
-		////trace("checkRoomSpace - start : " + startX + "," + startY + " end : " + endX + "," + endY);
 		
 		if (endX < 0 || endX > map.width || endY < 0 || endY > map.height) {
-			//trace("@@@@ checkRoomSpace failed -> Out of bounds!");
 			return false;
 		}
 		
 		for (i in startY...endY) {
 			for (j in startX...endX) {
-				////trace("pixel at " + j + "," + i + " : " + map.getPixel32(j, i));
 				if (map.getPixel32(j, i) != 4281545523) {
-				//trace("@@@@ checkRoomSpace failed -> There is another room in the way!");
 				return false;
 				}
 			}
 		}
 		
-		////trace("There is enough space in the map for this room");
 		return true;
 	}
 	
