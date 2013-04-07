@@ -1,5 +1,7 @@
-Simple Map Editor
-=================
+Simple Map Generator
+====================
+
+How it works:
 1. Create a room entrance;
 2. Creates the room;
 3. Creates two doors in the room (one to the east and the other to the south);
@@ -7,7 +9,6 @@ Simple Map Editor
 5. Repeat from step 2.
 
 To do: 
-
 * Eliminate unused doors;
 * Place objects inside the room:
   - Different floor tiles;
