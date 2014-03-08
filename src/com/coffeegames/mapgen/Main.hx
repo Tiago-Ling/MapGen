@@ -2,7 +2,9 @@ package com.coffeegames.mapgen;
 
 import flash.display.StageAlign;
 import flash.display.StageScaleMode;
+import flash.events.KeyboardEvent;
 import flash.Lib;
+import flash.ui.Keyboard;
 
 /**
  * ...
@@ -11,6 +13,7 @@ import flash.Lib;
 
 class Main 
 {
+	var mapGen:MapGenerator;
 	
 	static function main() 
 	{
@@ -22,8 +25,26 @@ class Main
 	}
 	
 	public function new() {
-		var mapGen:MapGenerator = new MapGenerator(60, 40, 20);
+		Lib.current.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyUp);
+		
+		init();
+	}
+	
+	private function init():Void {
+		mapGen = new MapGenerator(60, 40, 3, true);
 		mapGen.showMinimap(Lib.current, 8, MapAlign.Center);
+	}
+	
+	private function onKeyUp(e:KeyboardEvent):Void 
+	{
+		if (e.keyCode == Keyboard.SPACE) {
+			mapGen.generate();
+		}
+		
+		if (e.keyCode == Keyboard.ENTER) {
+			mapGen.dispose(Lib.current);
+			init();
+		}
 	}
 	
 }
