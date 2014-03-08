@@ -31,8 +31,15 @@ class Main
 	}
 	
 	private function init():Void {
-		mapGen = new MapGenerator(60, 40, 3, true);
-		mapGen.showMinimap(Lib.current, 8, MapAlign.Center);
+		mapGen = new MapGenerator(40, 20, 3, 5, 11, false);
+		mapGen.setIndices(10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22);
+		mapGen.showMinimap(Lib.current, 2, MapAlign.TopRight);
+		mapGen.showColorCodes();
+		
+		var mapData:Array<Array<Int>> = mapGen.extractData();
+		for (i in 0...mapData.length) {
+			trace(mapData[i]);
+		}
 	}
 	
 	private function onKeyUp(e:KeyboardEvent):Void 

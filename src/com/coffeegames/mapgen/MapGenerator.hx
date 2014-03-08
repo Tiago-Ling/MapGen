@@ -13,19 +13,19 @@ import flash.geom.Rectangle;
 class MapGenerator {
 	
 	//Mini-map colors
-	private var cNW_CORNER = 0xFFA30008;
-	private var cNE_CORNER = 0xFFBC2F36;
-	private var cSE_CORNER = 0xFFFD3F49;
-	private var cSW_CORNER = 0xFFFD7279;
-	private var cN_WALL = 0xFF1D0772;
-	private var cE_WALL = 0xFF3F2D84;
-	private var cS_WALL = 0xFF6749D7;
-	private var cW_WALL = 0xFF856FD7;
-	private var cS_DOOR = 0xFFFFD100;
-	private var cE_DOOR = 0xFFBFA530;
-	private var cENTRANCE = 0xFF82217A;
-	private var cFLOOR = 0xFFFFFFFF;
-	private var cNOTHING = 0xFF333333;
+	private var cNW_CORNER:UInt = 0xFFA30008;
+	private var cNE_CORNER:UInt = 0xFFBC2F36;
+	private var cSE_CORNER:UInt = 0xFFFD3F49;
+	private var cSW_CORNER:UInt = 0xFFFD7279;
+	private var cN_WALL:UInt = 0xFF1D0772;
+	private var cE_WALL:UInt = 0xFF3F2D84;
+	private var cS_WALL:UInt = 0xFF6749D7;
+	private var cW_WALL:UInt = 0xFF856FD7;
+	private var cS_DOOR:UInt = 0xFFFFD100;
+	private var cE_DOOR:UInt = 0xFFBFA530;
+	private var cENTRANCE:UInt = 0xFF82217A;
+	private var cFLOOR:UInt = 0xFFFFFFFF;
+	private var cNOTHING:UInt = 0xFF333333;
 	
 	//Indices
 	private var iNW_CORNER = 0;
@@ -67,17 +67,21 @@ class MapGenerator {
 	private var totalLoops:Int;
 	private var maxLoops:Int;
 	private var showDebug:Bool;
+	private var minRoomSize:Int;
+	private var maxRoomSize:Int;
 	
 	/**
 	 * Create a new instance of the map generator
-	 * @param	w	Width in tiles
-	 * @param	h	Height in tiles
-	 * @param	m	Max number of loops over doors
-	 * @param	s	Show Debug overlay
+	 * @param	width		Width in tiles
+	 * @param	height		Height in tiles
+	 * @param	maxLoops	Max number of loops over doors
+	 * @param	minRoomSize	Max number of loops over doors
+	 * @param	maxRoomSize	Max number of loops over doors
+	 * @param	showDebug	Show Debug overlay
 	 */
-	public function new(w:Int, h:Int, m:Int, s:Bool) {
-		width = w;
-		height = h;
+	public function new(width:Int, height:Int, maxLoops:Int, minRoomSize:Int, maxRoomSize:Int, showDebug:Bool) {
+		this.width = width;
+		this.height = height;
 		numRooms = 0;
 		
 		rooms = new Array<Room>();
@@ -86,9 +90,10 @@ class MapGenerator {
 		lowestX = 0;
 		
 		totalLoops = 0;
-		maxLoops = m;
-		showDebug = s;
-		
+		this.maxLoops = maxLoops;
+		this.showDebug = showDebug;
+		this.minRoomSize = minRoomSize;
+		this.maxRoomSize = maxRoomSize;
 		init();
 	}
 	
@@ -181,34 +186,34 @@ class MapGenerator {
 		//showColorCodes();
 	}
 	
-/*	private function showColorCodes():Void {
-		trace("NW CORNER : " + map.getPixel32(rooms[1].originX, rooms[1].originY));
+	public function showColorCodes():Void {
+		trace("NW CORNER : " + cNW_CORNER);
 		
-		trace("NE CORNER : " + map.getPixel32(rooms[0].originX + (rooms[0].width - 1), rooms[0].originY));
+		trace("NE CORNER : " + cNE_CORNER);
 		
-		trace("SE CORNER : " + map.getPixel32(rooms[0].originX + (rooms[0].width - 1), rooms[0].originY + (rooms[0].height - 1)));
+		trace("SE CORNER : " + cSE_CORNER);
 		
-		trace("SW CORNER : " + map.getPixel32(rooms[0].originX, rooms[0].originY + (rooms[0].height - 1)));
+		trace("SW CORNER : " + cSW_CORNER);
 		
-		trace("N WALL : " + map.getPixel32(rooms[0].originX + 1, rooms[0].originY));
+		trace("N WALL : " + cN_WALL);
 		
-		trace("E WALL : " + map.getPixel32(rooms[0].originX + (rooms[0].width - 1), rooms[0].originY + 1));
+		trace("E WALL : " + cE_WALL);
 		
-		trace("S WALL : " + map.getPixel32(rooms[0].originX + (rooms[0].width - 1) - 1, rooms[0].originY + (rooms[0].height - 1)));
+		trace("S WALL : " + cS_WALL);
 		
-		trace("W WALL : " + map.getPixel32(rooms[0].originX, rooms[0].originY + 1));
+		trace("W WALL : " + cW_WALL);
 		
-		trace("DOOR SOUTH: " + map.getPixel32(rooms[0].doors[0].x, rooms[0].doors[0].y - 1));
-		trace("DOOR POS : " + rooms[0].doors[0].x + "," + (rooms[0].doors[0].y - 1));
+		trace("DOOR SOUTH: " + cS_DOOR);
+		//trace("DOOR POS : " + rooms[0].doors[0].x + "," + (rooms[0].doors[0].y - 1));
 		
-		trace("DOOR EAST: " + map.getPixel32(rooms[0].doors[1].x - 1, rooms[0].doors[1].y));
-		trace("DOOR POS : " + (rooms[0].doors[1].x - 1) + "," + (rooms[0].doors[1].y));
+		trace("DOOR EAST: " + cE_DOOR);
+		//trace("DOOR POS : " + (rooms[0].doors[1].x - 1) + "," + (rooms[0].doors[1].y));
 		
-		trace("ENTRANCE : " + map.getPixel32(rooms[0].entrance.x, rooms[0].entrance.y));
+		trace("ENTRANCE : " + cENTRANCE);
 		
-		trace("FLOOR : " + map.getPixel32(rooms[0].originX + 1, rooms[0].originY + 1));
+		trace("FLOOR : " + cFLOOR);
 		
-	}*/
+	}
 	
 	public function showMinimap(parent:DisplayObjectContainer, scale:Int, align:MapAlign):Void {
 		display = new Bitmap(map);
@@ -248,7 +253,7 @@ class MapGenerator {
 	
 	public function generate():Void {
 		
-		//while (totalLoops <= maxLoops) {
+		while (totalLoops <= maxLoops) {
 			if (numRooms == 0) { //First room
 				var dType:DoorType = getRand(0, 1) == 0 ? DoorType.North : DoorType.West;
 				currentRoomEntrance = new Door(0, 0, dType);
@@ -341,17 +346,16 @@ class MapGenerator {
 					}
 				}
 			}
-		//}
+		}
 		
-		trace("TOTAL ROOMS IN THE MAP : " + rooms.length);
-		trace("TOTAL ROOMS IN THE MAP : " + numRooms);
+		//trace("TOTAL ROOMS IN THE MAP : " + numRooms);
 	}
 	
 	private function reduceRoom(room:Room):Bool {
 		//Try to reduce -1w, then -1h, -2w & finally -2h
 		//Then check to see if room is equal or larger than minimal space
 		var minSize = 4;
-		trace("reduceRoom -> initial room size : " + room.width + "," + room.height);
+		//trace("reduceRoom -> initial room size : " + room.width + "," + room.height);
 		
 		while (room.width > minSize || room.height > minSize) {
 			room.width--;
@@ -363,7 +367,7 @@ class MapGenerator {
 				var eastDoor:Door = new Door(Std.int(room.originX + (room.width - 1)), Std.int(room.originY + (room.height / 2)), DoorType.East);
 				room.doors[0] = southDoor;
 				room.doors[1] = eastDoor;
-				trace("reduceRoom -> ROOM FIT - final room size : " + room.width + "," + room.height);
+				//trace("reduceRoom -> ROOM FIT - final room size : " + room.width + "," + room.height);
 				return true;
 			}
 			
@@ -376,12 +380,12 @@ class MapGenerator {
 				var eastDoor:Door = new Door(Std.int(room.originX + (room.width - 1)), Std.int(room.originY + (room.height / 2)), DoorType.East);
 				room.doors[0] = southDoor;
 				room.doors[1] = eastDoor;
-				trace("reduceRoom -> ROOM FIT - final room size : " + room.width + "," + room.height);
+				//trace("reduceRoom -> ROOM FIT - final room size : " + room.width + "," + room.height);
 				return true;
 			}
 		}
 		
-		trace("reduceRoom -> DID NOT FIT! final room size : " + room.width + "," + room.height);
+		//trace("reduceRoom -> DID NOT FIT! final room size : " + room.width + "," + room.height);
 		return false;
 	}
 	
@@ -451,31 +455,31 @@ class MapGenerator {
 		for (i in 0...w) {
 			mapData[i] = new Array<Int>();
 			for (j in 0...h) {
-				var pixel = map.getPixel32(i, j);
+				var pixel:Float = map.getPixel32(i, j);
 				switch (pixel) {
-					case 0xFFA30008: //NW CORNER
+					case 4288872456: //NW CORNER
 						mapData[i][j] = iNW_CORNER;
-					case 0xFFBC2F36: //NE CORNER
+					case 4290522934: //NE CORNER
 						mapData[i][j] = iNE_CORNER;
-					case 0xFFFD7279: //SW CORNER
-						mapData[i][j] = iSW_CORNER;
-					case 0xFFFD3F49: //SE CORNER
+					case 4294786889: //SE CORNER
 						mapData[i][j] = iSE_CORNER;
-					case 0xFF82217A: //ENTRANCE
-						mapData[i][j] = iENTRANCE;
-					case 0xFF1D0772: //NORTH WALL
+					case 4294799993: //SW CORNER
+						mapData[i][j] = iSW_CORNER;
+					case 4280092530: //NORTH WALL
 						mapData[i][j] = iN_WALL;
-					case 0xFF856FD7: //WEST WALL
-						mapData[i][j] = iW_WALL;
-					case 0xFFBFA530: //EAST DOOR
-						mapData[i][j] = iE_DOOR;
-					case 0xFF3F2D84: //EAST WALL
+					case 4282330500: //EAST WALL
 						mapData[i][j] = iE_WALL;
-					case 0xFFFFD100: //SOUTH DOOR
-						mapData[i][j] = iS_DOOR;
-					case 0xFF6749D7: //SOUTH WALL
+					case 4284959191: //SOUTH WALL
 						mapData[i][j] = iS_WALL;
-					case 0xFFFFFFFF: //GROUND
+					case 4286934999: //WEST WALL
+						mapData[i][j] = iW_WALL;
+					case 4294955264: //SOUTH DOOR
+						mapData[i][j] = iS_DOOR;
+					case 4290749744: //EAST DOOR
+						mapData[i][j] = iE_DOOR;
+					case 4286718330: //ENTRANCE
+						mapData[i][j] = iENTRANCE;
+					case 4294967295: //GROUND
 						mapData[i][j] = iFLOOR;
 					default: //EMPTY SPACE
 						mapData[i][j] = iNOTHING;
@@ -494,18 +498,22 @@ class MapGenerator {
 		var endY:Int = startY + room.height;
 		
 		if (endX < 0 || endX > map.width || endY < 0 || endY > map.height) {
-			trace("checkRoomSpace -> Room out of boundaries");
-			debugOverlay.fillRect(new Rectangle(0, 0, debugOverlay.width, debugOverlay.height), 0x4400CC00);
-			debugOverlay.fillRect(new Rectangle(room.originX, room.originY, room.width, room.height), 0xFFFFFF66);
+			if (showDebug) {
+				trace("checkRoomSpace -> Room out of boundaries");
+				debugOverlay.fillRect(new Rectangle(0, 0, debugOverlay.width, debugOverlay.height), 0x4400CC00);
+				debugOverlay.fillRect(new Rectangle(room.originX, room.originY, room.width, room.height), 0xFFFFFF66);
+			}
 			return false;
 		}
 		
 		for (i in startY...endY) {
 			for (j in startX...endX) {
 				if (map.getPixel32(j, i) != 4281545523) {
-					trace("checkRoomSpace -> Room is overlaping other room");
-					debugOverlay.fillRect(new Rectangle(0, 0, debugOverlay.width, debugOverlay.height), 0x4400CC00);
-					debugOverlay.fillRect(new Rectangle(room.originX, room.originY, room.width, room.height), 0xFFFFFF66);
+					if (showDebug) {
+						trace("checkRoomSpace -> Room is overlaping other room");
+						debugOverlay.fillRect(new Rectangle(0, 0, debugOverlay.width, debugOverlay.height), 0x4400CC00);
+						debugOverlay.fillRect(new Rectangle(room.originX, room.originY, room.width, room.height), 0xFFFFFF66);
+					}
 					return false;
 				}
 			}
@@ -515,44 +523,10 @@ class MapGenerator {
 	}
 	
 	private function getRoomSize():Point {
-		var minSize = 5;
-		var maxSize = 11;
-		var width:Int = getRand(minSize, maxSize);
-		var height:Int = getRand(minSize, maxSize);
-/*		var counter:Int = getRand(0, 3);
-		switch (counter) {
-			case 0:
-				//width = 5;
-				width = 7;
-			case 1:
-				//width = 7;
-				width = 9;
-			case 2:
-				//width = 9;
-				width = 11;
-			case 3:
-				//width = 11;
-				width = 13;
-		}
-		
-		counter = getRand(0, 3);
-		switch (counter) {
-			case 0:
-				//height = 5;
-				height = 7;
-			case 1:
-				//height = 7;
-				height = 9;
-			case 2:
-				//height = 9;
-				height = 11;
-			case 3:
-				//height = 11;
-				height = 13;
-		}*/
-		
-		
-		
+/*		var minSize = 5;
+		var maxSize = 11;*/
+		var width:Int = getRand(minRoomSize, maxRoomSize);
+		var height:Int = getRand(minRoomSize, maxRoomSize);
 		return new Point(width, height);
 	}
 	
