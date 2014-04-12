@@ -1,4 +1,4 @@
-package com.coffeegames.mapgen;
+package coffeegames.mapgen;
 import flash.geom.Point;
 
 /**
@@ -11,8 +11,10 @@ class Room
 	public var originY:Int;
 	public var width:Int;
 	public var height:Int;
+	public var depth:Int;
 	public var entrance:Door;
 	public var doors:Array<Door>;
+	public var layout:Array<Array<Int>>;
 	
 	public function new(x:Int, y:Int, width:Int, height:Int)
 	{

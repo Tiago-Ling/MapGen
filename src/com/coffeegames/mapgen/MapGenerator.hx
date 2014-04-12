@@ -1,4 +1,4 @@
-package com.coffeegames.mapgen;
+package coffeegames.mapgen;
 import flash.display.Bitmap;
 import flash.display.BitmapData;
 import flash.display.DisplayObjectContainer;
@@ -181,37 +181,24 @@ class MapGenerator {
 		if (showDebug) {
 			debugOverlay = new BitmapData(width, height, true, 0x4400CC00);
 		}
-		generate();
+		//generate();
 		
 		//showColorCodes();
 	}
 	
 	public function showColorCodes():Void {
-		trace("NW CORNER : " + cNW_CORNER);
-		
-		trace("NE CORNER : " + cNE_CORNER);
-		
-		trace("SE CORNER : " + cSE_CORNER);
-		
-		trace("SW CORNER : " + cSW_CORNER);
-		
-		trace("N WALL : " + cN_WALL);
-		
-		trace("E WALL : " + cE_WALL);
-		
-		trace("S WALL : " + cS_WALL);
-		
-		trace("W WALL : " + cW_WALL);
-		
-		trace("DOOR SOUTH: " + cS_DOOR);
-		//trace("DOOR POS : " + rooms[0].doors[0].x + "," + (rooms[0].doors[0].y - 1));
-		
-		trace("DOOR EAST: " + cE_DOOR);
-		//trace("DOOR POS : " + (rooms[0].doors[1].x - 1) + "," + (rooms[0].doors[1].y));
-		
-		trace("ENTRANCE : " + cENTRANCE);
-		
-		trace("FLOOR : " + cFLOOR);
+		trace("NW CORNER (" + iNW_CORNER + ") : " + cNW_CORNER);
+		trace("NE CORNER (" + iNE_CORNER + ") : " + cNE_CORNER);
+		trace("SE CORNER (" + iSE_CORNER + ") : " + cSE_CORNER);
+		trace("SW CORNER (" + iSW_CORNER + ") : " + cSW_CORNER);
+		trace("N WALL (" + iN_WALL + ") : " + cN_WALL);
+		trace("E WALL (" + iE_WALL + ") : " + cE_WALL);
+		trace("S WALL (" + iS_WALL + ") : " + cS_WALL);
+		trace("W WALL (" + iW_WALL + ") : " + cW_WALL);
+		trace("DOOR SOUTH (" + iS_DOOR + ") : " + cS_DOOR);
+		trace("DOOR EAST (" + iE_DOOR + ") : " + cE_DOOR);
+		trace("ENTRANCE (" + iENTRANCE + ") : " + cENTRANCE);
+		trace("FLOOR (" + iFLOOR + ") : " + cFLOOR);
 		
 	}
 	
@@ -289,6 +276,7 @@ class MapGenerator {
 			}
 			
 			//Compare currentRoomSize with previousRoomSize and align them
+			//TODO: ALIGN CORRECTLY ACCORDING TO EVEN / ODD PREVIOUS AND CURRENT ROOM SIZES.
 			if (numRooms != 0) {
 				if (currentRoomEntrance.type == DoorType.South) {
 					room.originX -= Std.int(room.width / 2);
@@ -354,7 +342,7 @@ class MapGenerator {
 	private function reduceRoom(room:Room):Bool {
 		//Try to reduce -1w, then -1h, -2w & finally -2h
 		//Then check to see if room is equal or larger than minimal space
-		var minSize = 4;
+		var minSize = 5;
 		//trace("reduceRoom -> initial room size : " + room.width + "," + room.height);
 		
 		while (room.width > minSize || room.height > minSize) {
@@ -395,54 +383,77 @@ class MapGenerator {
 		var endX:Int = startX + room.width;
 		var endY:Int = startY + room.height;
 		
+		room.layout = new Array<Array<Int>>();
+		
+		var indexCountX:Int = 0;
+		var indexCountY:Int = 0;
+		
 		for (countY in startY...endY) {
+			room.layout[indexCountY] = new Array<Int>();
 			for (countX in startX...endX) {
 				if (countX == startX && countY == startY) { // NW CORNER
 					map.setPixel32(countX, countY, cNW_CORNER);
 					//map.setPixel32(countX, countY, 0xFF4C57D8);
+					room.layout[indexCountY][indexCountX] = iNW_CORNER;
 					
 				} else if (countX == (endX - 1) && countY == startY) { // NE CORNER
 					map.setPixel32(countX, countY, cNE_CORNER);
 					//map.setPixel32(countX, countY, 0xFF4C57D8);
+					room.layout[indexCountY][indexCountX] = iNE_CORNER;
 					
 				} else if (countX == startX && countY == (endY - 1)) { // SW CORNER
 					map.setPixel32(countX, countY, cSW_CORNER);
 					//map.setPixel32(countX, countY, 0xFF4C57D8);
+					room.layout[indexCountY][indexCountX] = iSW_CORNER;
 					
 				} else if (countX == (endX - 1) && countY == (endY - 1)) { // SE CORNER
 					map.setPixel32(countX, countY, cSE_CORNER);
 					//map.setPixel32(countX, countY, 0xFF4C57D8);
+					room.layout[indexCountY][indexCountX] = iSE_CORNER;
 					
 				} else if (countX == room.entrance.x && countY == room.entrance.y) { //ENTRANCE
 					map.setPixel32(room.entrance.x, room.entrance.y, cENTRANCE);
+					room.layout[indexCountY][indexCountX] = iENTRANCE;
 					
-				} else if (countX == startX) { // NORTH WALL
-					map.setPixel32(countX, countY, cN_WALL);
-					//map.setPixel32(countX, countY, 0xFF4C57D8);
-					
-				} else if (countY == startY) { // WEST WALL
+				} else if (countX == startX) { // WEST WALL
 					map.setPixel32(countX, countY, cW_WALL);
 					//map.setPixel32(countX, countY, 0xFF4C57D8);
+					room.layout[indexCountY][indexCountX] = iW_WALL;
+					
+				} else if (countY == startY) { // NORTH WALL
+					map.setPixel32(countX, countY, cN_WALL);
+					//map.setPixel32(countX, countY, 0xFF4C57D8);
+					room.layout[indexCountY][indexCountX] = iN_WALL;
 					
 				} else if (countX == room.doors[1].x && countY == room.doors[1].y) { //DOOR EAST
 					map.setPixel32(countX, countY, cE_DOOR);
 					//map.setPixel32(countX, countY, 0xFFFFD100);
+					room.layout[indexCountY][indexCountX] = iE_DOOR;
 					
 				} else if (countX == (endX - 1)) { // EAST WALL
 					map.setPixel32(countX, countY, cE_WALL);
 					//map.setPixel32(countX, countY, 0xFF4C57D8);
+					room.layout[indexCountY][indexCountX] = iE_WALL;
 					
 				} else if (countX == room.doors[0].x && countY == room.doors[0].y) { //DOOR SOUTH
 					map.setPixel32(countX, countY, cS_DOOR);
+					room.layout[indexCountY][indexCountX] = iS_DOOR;
 					
 				} else if (countY == (endY - 1)) { // SOUTH WALL
 					map.setPixel32(countX, countY, cS_WALL);
 					//map.setPixel32(countX, countY, 0xFF4C57D8);
+					room.layout[indexCountY][indexCountX] = iS_WALL;
 					
 				} else { // GROUND
 					map.setPixel32(countX, countY, cFLOOR);
+					room.layout[indexCountY][indexCountX] = iFLOOR;
 				}
+				
+				indexCountX++;
 			}
+			
+			indexCountX = 0;
+			indexCountY++;
 		}
 	}
 	
@@ -452,10 +463,10 @@ class MapGenerator {
 		var h = map.height;
 		mapData = new Array<Array<Int>>();
 		
-		for (i in 0...w) {
+		for (i in 0...h) {
 			mapData[i] = new Array<Int>();
-			for (j in 0...h) {
-				var pixel:Float = map.getPixel32(i, j);
+			for (j in 0...w) {
+				var pixel:Float = map.getPixel32(j, i);
 				switch (pixel) {
 					case 4288872456: //NW CORNER
 						mapData[i][j] = iNW_CORNER;

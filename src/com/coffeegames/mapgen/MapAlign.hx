@@ -1,4 +1,4 @@
-package com.coffeegames.mapgen;
+package coffeegames.mapgen;
 
 /**
  * @author Tiago Ling Alexandre
